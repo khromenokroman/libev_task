@@ -43,23 +43,23 @@ void ::server::echo::Server::set_nonblocking(int const fd) {
     fcntl(fd, F_SETFL, flags | O_NONBLOCK);
 }
 
-void ::server::echo::Server::client_cb(struct ev_loop *loop, ev_io *w, int revents) {
+void ::server::echo::Server::client_cb(struct ev_loop *loop, ev_io *watcher, int revents) {
     std::array<char, M_BUFFER_SIZE> buffer{};
 
     if (revents & EV_READ) {
         //@todo: может получить не все сообщение, не самое лучшее решение
-        ssize_t read_bytes = recv(w->fd, buffer.data(), buffer.size() - 1, 0);
+        ssize_t read_bytes = recv(watcher->fd, buffer.data(), buffer.size() - 1, 0);
         if (read_bytes <= 0) {
             syslog(LOG_NOTICE, "Client disconnected.");
-            ev_io_stop(loop, w);
-            close(w->fd);
-            delete w;
+            ev_io_stop(loop, watcher);
+            close(watcher->fd);
+            delete watcher;
         } else {
             buffer[read_bytes] = '\0';
             syslog(LOG_INFO, "Received message from client: %s", buffer.data());
 
             // send message for client
-            send(w->fd, buffer.data(), read_bytes, 0);
+            send(watcher->fd, buffer.data(), read_bytes, 0);
         }
     }
 }
@@ -74,11 +74,11 @@ void server::echo::Server::run() const {
     ev_loop(m_loop.get(), 0);
 }
 
-void ::server::echo::Server::accept_cb(struct ev_loop *loop, ev_io *w, [[maybe_unused]] int revents) {
+void ::server::echo::Server::accept_cb(struct ev_loop *loop, ev_io *watcher, [[maybe_unused]] int revents) {
     struct sockaddr_in client_addr{};
     socklen_t client_len = sizeof(client_addr);
 
-    int client_fd = accept(w->fd, reinterpret_cast<struct sockaddr *>(&client_addr), &client_len);
+    int client_fd = accept(watcher->fd, reinterpret_cast<struct sockaddr *>(&client_addr), &client_len);
     if (client_fd < 0) {
         syslog(LOG_ERR, "Failed to accept new connection: %s", strerror(errno));
         throw exceptions::Accept_socket(std::string("Listen failed: ").append(strerror(errno)));
