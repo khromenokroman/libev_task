@@ -15,7 +15,7 @@
 
 ## Как собрать
 ````bash
-sudo apt install libev-dev build-essential
+apt install libev-dev build-essential
 mkdir -p build && cd build
 cmake ..
 cmake --build . 
