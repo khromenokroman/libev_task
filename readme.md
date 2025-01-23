@@ -19,11 +19,19 @@ apt install libev-dev build-essential
 mkdir -p build && cd build
 cmake ..
 cmake --build . 
+cpack -G DEB
 ````
-
+Соберется пакет `libev_task-0.0.1-Linux.deb` который можно установить используя пакетный менеджер
+````bash
+apt install ./libev_task-0.0.1-Linux.deb 
+#или
+dpkg -i ./libev_task-0.0.1-Linux.deb
+````
 ## Как запустить
 ````bash
-./echo_server
+./server
+#или если установка была через пакетный менеджер
+server
 ````
 - Принимает входящие подключения.
 - Эхо-сообщения (отправляет клиенту то же самое сообщение, что и получает).

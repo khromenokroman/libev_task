@@ -2,7 +2,7 @@
 
 server::echo::Server::Server() : m_loop{ev_default_loop(0), ev_loop_destroy} {
     openlog("EchoServer", LOG_PID | LOG_CONS, LOG_USER);
-    syslog(LOG_INFO, "Server starting...");
+    syslog(LOG_INFO, "Server starting ver: %d.%d.%d-%d ...", VERSION_MAJOR, VERSION_MINOR, VERSION_PATCH, VERSION_TWEAK);
 
     m_server_fd = socket(AF_INET, SOCK_STREAM, 0);
     if (m_server_fd < 0) {
@@ -55,11 +55,11 @@ void ::server::echo::Server::client_cb(struct ev_loop *loop, ev_io *watcher, int
             close(watcher->fd);
             delete watcher;
         } else {
-            buffer[read_bytes] = '\0';
+            buffer[static_cast<::std::size_t>(read_bytes)] = '\0';
             syslog(LOG_INFO, "Received message from client: %s", buffer.data());
 
             // send message for client
-            send(watcher->fd, buffer.data(), read_bytes, 0);
+            send(watcher->fd, buffer.data(), static_cast<::std::size_t>(read_bytes), 0);
         }
     }
 }
