@@ -59,6 +59,7 @@ void ::server::echo::Server::client_cb(struct ev_loop *loop, ev_io *watcher, int
             buffer[static_cast<::std::size_t>(read_bytes)] = '\0';
             syslog(LOG_INFO, "Received message from client: %s", buffer.data());
 
+            //@todo: код возврата надо проверить
             // send message for client
             send(watcher->fd, buffer.data(), static_cast<::std::size_t>(read_bytes), 0);
         }
