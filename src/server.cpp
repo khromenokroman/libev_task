@@ -2,6 +2,7 @@
 
 server::echo::Server::Server() : m_loop{ev_default_loop(0), ev_loop_destroy} {
     openlog("EchoServer", LOG_PID | LOG_CONS, LOG_USER);
+    std::printf("Server pid: %d\n", getpid());
     syslog(LOG_INFO, "Server starting ver: %d.%d.%d-%d ...", VERSION_MAJOR, VERSION_MINOR, VERSION_PATCH, VERSION_TWEAK);
 
     m_server_fd = socket(AF_INET, SOCK_STREAM, 0);
